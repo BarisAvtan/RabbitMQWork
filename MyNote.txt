@@ -1,3 +1,10 @@
-
+﻿
 
 install rabbitmqclient
+
+
+//Fanout Exchange
+Producer yani publisher rabbbitmq ya bir mesaj gönderdiğinde excahnge tipi fanout olan excahange'e mesaj gönderir.
+fanout excahnge kendisine baglı olan tüm kuyruklara mesajı gönderir.Baglı olan kuyruklarda bir filitreleme yapmaz.
+Kuyrugu dinleyenler cunsomer yani subsriberlardır.
+Fanout Exchange yönteminde kuyrugu consumerlar kendisi oluşturur.İş bittiginde bu kuyruklar kendiğiliğinden silinebilir..
