@@ -3,6 +3,19 @@
 install rabbitmqclient
 
 
+*Direct Exchange: Bu exchange tipi, mesajların doğrudan bir kuyruğa yönlendirilmesini sağlar. 
+Mesajın yönlendirileceği kuyruk, mesajın "routing key" adı verilen bir özelliğine göre belirlenir.
+
+*Fanout Exchange: Bu exchange tipi, mesajları tüm bağlı kuyruklara yönlendirir. 
+Mesajın routing key özelliği önemsizdir, tüm kuyruklara eşit şekilde dağıtılır.
+
+*Topic Exchange: Bu exchange tipi, mesajları routing key'e göre belirlenen kuyruklara yönlendirir.
+Routing key, konu başlığına benzer şekilde tanımlanır ve mesajın yönlendirileceği kuyruk, routing key ile belirlenir.
+
+*Headers Exchange: Bu exchange tipi, mesajların routing key yerine, mesajın header özelliklerine göre yönlendirilmesini sağlar.
+Mesajın header özellikleri, belirli bir şartın karşılanması halinde mesajın ilgili kuyruğa yönlendirilmesini sağlar.
+
+
 //Fanout Exchange
 Producer yani publisher rabbbitmq ya bir mesaj gönderdiğinde excahnge tipi fanout olan excahange'e mesaj gönderir.
 fanout excahnge kendisine baglı olan tüm kuyruklara mesajı gönderir.Baglı olan kuyruklarda bir filitreleme yapmaz.
