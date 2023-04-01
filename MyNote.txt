@@ -22,7 +22,19 @@ fanout excahnge kendisine baglı olan tüm kuyruklara mesajı gönderir.Baglı o
 Kuyrugu dinleyenler cunsomer yani subsriberlardır.
 Fanout Exchange yönteminde kuyrugu consumerlar kendisi oluşturur.İş bittiginde bu kuyruklar kendiğiliğinden silinebilir.
 
-//Direct Exchange
+//Direct Exchange test için ilk subsriber calışacak sonra publisher 
 Producer yani publisher tarafından bir mesaj geldiğinde bu mesajı root bilgisine göre tüm kuyruklara gönderirir.
 Fanout tüm kuyruklara gönderirirken Direct Exchange gelen mesajın rootunda göre gönderim işlemi yapar.
+
+
+//Mesajları  kalıcı hale getirmek içi properties olusturmak gerekir(excehange durable true,queue druable true)
+var properties = channel.CreateBasicProperties();
+properties.Headers = headers;
+properties.Persistent = true;  // dersek mesajlar kalıcı hale gelir rabbit mq restart olsa dahi mesajlar kaybolmaz.
+
+//Mesajda datalar gönderilebilir ama büyük dataların gönderilmesi önerilmez.Aşagıda örnek verildi.
+var product = new Product { Id = 1, Name = "Bilgisayar", Price = 100, Stock = 10 };
+var productJsonString = JsonSerializer.Serialize(product);
+channel.BasicPublish("header-exchange", string.Empty, properties, Encoding.UTF8.GetBytes(productJsonString));
+
 
