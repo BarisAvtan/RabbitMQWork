@@ -13,19 +13,19 @@ namespace RabbitMQWatermarkApp.Services
 
         private readonly ILogger<RabbitMQClientService> _logger;
 
-        public RabbitMQClientService(ConnectionFactory connectionFactory, ILogger<RabbitMQClientService> logger)
+        public RabbitMQClientService(ConnectionFactory connectionFactory, ILogger<RabbitMQClientService> logger)//ctor
         {
             _connectionFactory = connectionFactory;
             _logger = logger;
 
         }
 
-        public IModel Connect()
+        public IModel Connect() //IModel model yani kanal döncez (return _channel;)
         {
             _connection = _connectionFactory.CreateConnection();
 
 
-            if (_channel is { IsOpen: true })
+            if (_channel is { IsOpen: true })//kanal varsa if(_channel.isOpen)'da diyebiliriz.
             {
                 return _channel;
             }
@@ -34,12 +34,12 @@ namespace RabbitMQWatermarkApp.Services
 
             _channel.ExchangeDeclare(ExchangeName, type: "direct", true, false);
 
-            _channel.QueueDeclare(QueueName, true, false, false, null);
+            _channel.QueueDeclare(QueueName, true, false, false, null);//kuyruk
 
 
             _channel.QueueBind(exchange: ExchangeName, queue: QueueName, routingKey: RoutingWatermark);
 
-            _logger.LogInformation("RabbitMQ ile bağlantı kuruldu...");
+            _logger.LogInformation("RabbitMQ ile bağlantı kuruldu...");//rabbit mq logu
 
 
             return _channel;

@@ -6,16 +6,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQWatermarkApp.Models;
+using RabbitMQWatermarkApp.Services;
 
 namespace RabbitMQWatermarkApp.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly AppDbContext _context;
-
-        public ProductsController(AppDbContext context)
+        private readonly RabbitMQPublisher _rabbitMQPublisher;
+        public ProductsController(AppDbContext context, RabbitMQPublisher rabbitMQPublisher)
         {
             _context = context;
+            _rabbitMQPublisher = rabbitMQPublisher;
         }
 
         // GET: Products
@@ -55,16 +57,38 @@ namespace RabbitMQWatermarkApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Price,Stock,ImageName")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,Price,Stock,ImageName")] Product product, IFormFile ImageFile)
         {
-            if (ModelState.IsValid)
+
+            if (!ModelState.IsValid) return View(product);
+
+
+            if (ImageFile is { Length: > 0 })
             {
-                _context.Add(product);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var randomImageName = Guid.NewGuid() + Path.GetExtension(ImageFile.FileName);
+
+
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", randomImageName);
+                //var path = "@\"D:\\Logs\\";
+
+                await using FileStream stream = new(path, FileMode.Create);
+
+
+                await ImageFile.CopyToAsync(stream);
+
+
+                _rabbitMQPublisher.Publish(new productImageCreatedEvent() { ImageName = randomImageName });
+
+                product.ImageName = randomImageName;
             }
-            return View(product);
+
+            _context.Add(product);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+
+           // return View(product);
         }
+
 
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
